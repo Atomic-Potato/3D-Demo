@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Player : Singleton<Player>
 {
-    [SerializeField] float _speed = 5f;
-    [SerializeField] float _runSpeed = 10f;
-    [SerializeField] float _jumpForce = 10f;
+    [SerializeField, Min(0)] float _speed = 5f;
+    [SerializeField, Min(0)] float _runSpeed = 10f;
+    [SerializeField, Min(0)] float _jumpForce = 10f;
 
     [Space]
     [SerializeField] Vector3 _groundedBoxHalfExtents;
@@ -19,6 +19,8 @@ public class Player : Singleton<Player>
     [Space]
     [SerializeField] Transform _cameraTransfrom;
     [SerializeField] Rigidbody _rigidbody;
+    [SerializeField] Holder _holder;
+    public Holder Holder => _holder; 
 
     Vector2 _moveInput;
     bool _isRunInput;
@@ -58,7 +60,6 @@ public class Player : Singleton<Player>
     void Move()
     {
         _rigidbody.useGravity = !(IsOnSlope && IsGrounded);
-        Debug.Log(_rigidbody.useGravity);
         float speed = _isRunInput ? _runSpeed : _speed;
         Vector3 direction = Vector3.ProjectOnPlane(
                 new Vector3(_moveInput.x, 0f, _moveInput.y), _slopeHit.normal).normalized;
