@@ -4,7 +4,8 @@ public class ElevatorDoor : MonoBehaviour, IInterractable
 {
     [SerializeField] Transform _sittingTransform;
     [SerializeField] Transform _exitTransform;
-    [SerializeField] MoveElevatorButton[] _buttons;
+    [SerializeField] MoveElevatorButton[] _moveButtons;
+    [SerializeField] ResetElevatorButton[] _resetButtons;
     bool _isSittingComfortably;
 
     public GameObject GetGameObject()
@@ -21,8 +22,10 @@ public class ElevatorDoor : MonoBehaviour, IInterractable
             actor.transform.position = _sittingTransform.position;
             actor.transform.parent = _sittingTransform.parent;
             actor.Rigidbody.isKinematic = true;
-            foreach (MoveElevatorButton button in _buttons)
+            foreach (MoveElevatorButton button in _moveButtons)
                 button.Activate();
+            foreach (ResetElevatorButton button in _resetButtons)
+                    button.Deactivate();
         }
         else
         {
@@ -31,7 +34,7 @@ public class ElevatorDoor : MonoBehaviour, IInterractable
             actor.transform.position = _exitTransform.position;
             actor.transform.parent = null;
             actor.Rigidbody.isKinematic = false;
-            foreach (MoveElevatorButton button in _buttons)
+            foreach (MoveElevatorButton button in _moveButtons)
                 button.Deactivate();
         }
     }

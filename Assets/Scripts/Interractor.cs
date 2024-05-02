@@ -22,7 +22,7 @@ public class Interractor : MonoBehaviour
 
         if (interactable != null)
         {
-            if (Input.GetKeyDown(KeyCode.F) || Input.GetKey(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.F))
             {
                 interactable.Intertact(Player.Instance);
                 Debug.Log("Interacted " + interactable.GetGameObject().name);

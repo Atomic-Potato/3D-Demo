@@ -42,6 +42,7 @@ public class MoveElevatorButton : MonoBehaviour, IInterractable, IActive
 
     public void Intertact(Player actor)
     {
+        Debug.Log(_isActive);
         if (!_isActive)
             return;
         IsMovingElevator = true;

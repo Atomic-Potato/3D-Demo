@@ -8,6 +8,7 @@ public class Elevator : MonoBehaviour
     public float speed = 5;
     float distanceTravelled;
 
+
     void Start() {
         if (pathCreator != null)
         {
@@ -29,7 +30,6 @@ public class Elevator : MonoBehaviour
         {
             distanceTravelled += speed * Time.deltaTime;
             Vector3 newPoint = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
-            // Debug.Log("Moving forward " + _previousPoint + " " + "");
             if (_previousPoint == newPoint)
             {
                 _isreachedEnd = true;
@@ -53,7 +53,7 @@ public class Elevator : MonoBehaviour
                 distanceTravelled = 0f;
                 return;
             }
-            Debug.Log("Moving backward");
+            
             distanceTravelled -= speed * Time.deltaTime;
             transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
             Quaternion rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
