@@ -8,12 +8,18 @@ public class Player : Singleton<Player>
     [SerializeField] float _jumpForce = 10f;
 
     [Space]
+    [SerializeField] Vector3 _groundedBoxHalfExtents;
+    [SerializeField] Transform _groundedTransfrom;
+    [SerializeField] LayerMask _walkableLayer;
+    
+    [Space]
     [SerializeField] Transform _cameraTransfrom;
     [SerializeField] Rigidbody _rigidbody;
 
     Vector2 _moveInput;
     bool _isRunInput;
     bool _isJumpInput;
+    public bool IsGrounded {get; protected set;}
 
     void OnDrawGizmos()
     {
@@ -30,8 +36,9 @@ public class Player : Singleton<Player>
     void Update()
     {
         UpdateInput();
+        UpdateGrounded();
         Move();
-        Jump(); 
+        Jump();
     }
 
     void UpdateInput()
@@ -52,7 +59,13 @@ public class Player : Singleton<Player>
 
     void Jump()
     {
-        if (_isJumpInput)
+        if (_isJumpInput && IsGrounded)
             _rigidbody.AddForce(Vector3.up * _jumpForce , ForceMode.Impulse);
+    }
+
+    void UpdateGrounded()
+    {
+        Collider[] cols = Physics.OverlapBox(_groundedTransfrom.position, _groundedBoxHalfExtents, Quaternion.identity, _walkableLayer);
+        IsGrounded = cols.Length != 0;
     }
 }
