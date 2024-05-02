@@ -18,7 +18,7 @@ public class Player : Singleton<Player>
 
     [Space]
     [SerializeField] Transform _cameraTransfrom;
-    [SerializeField] Rigidbody _rigidbody;
+    public Rigidbody Rigidbody;
     [SerializeField] Holder _holder;
     public Holder Holder => _holder; 
 
@@ -27,6 +27,7 @@ public class Player : Singleton<Player>
     bool _isJumpInput;
     public bool IsGrounded {get; protected set;}
     public bool IsOnSlope {get; protected set;}
+    [HideInInspector] public bool IsMovementActive = true;
 
     void OnDrawGizmos()
     {
@@ -37,7 +38,7 @@ public class Player : Singleton<Player>
 
     void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        Rigidbody = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -45,7 +46,8 @@ public class Player : Singleton<Player>
         UpdateInput();
         UpdateGrounded();
         UpdateIsOnSlope();
-        Move();
+        if (IsMovementActive)
+            Move();
     }
 
     void UpdateInput()
@@ -59,17 +61,17 @@ public class Player : Singleton<Player>
 
     void Move()
     {
-        _rigidbody.useGravity = !(IsOnSlope && IsGrounded);
+        Rigidbody.useGravity = !(IsOnSlope && IsGrounded);
         float speed = _isRunInput ? _runSpeed : _speed;
         Vector3 direction = Vector3.ProjectOnPlane(
                 new Vector3(_moveInput.x, 0f, _moveInput.y), _slopeHit.normal).normalized;
         Vector3 velocity = new Vector3(
             direction.x * speed, 
-            _rigidbody.useGravity ? _rigidbody.velocity.y : direction.y * speed, 
+            Rigidbody.useGravity ? Rigidbody.velocity.y : direction.y * speed, 
             direction.z * speed);
         if (_isJumpInput && IsGrounded)
             velocity.y = _jumpForce;
-        _rigidbody.velocity = velocity;
+        Rigidbody.velocity = velocity;
     }
 
     void UpdateGrounded()
