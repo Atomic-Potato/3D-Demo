@@ -53,7 +53,7 @@ public class Player : Singleton<Player>
         Vector2 forward = new Vector2(-_cameraTransfrom.right.z, _cameraTransfrom.right.x);
         Vector2 right = new Vector2(_cameraTransfrom.right.x, _cameraTransfrom.right.z);
         _moveInput = forward * Input.GetAxis("Vertical") + right * Input.GetAxis("Horizontal");
-        _isRunInput = Input.GetKeyDown(KeyCode.LeftShift);
+        _isRunInput = Input.GetKey(KeyCode.LeftShift);
         _isJumpInput = Input.GetKeyDown(KeyCode.Space);
     }
 
