@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http.Headers;
 using UnityEngine;
 
 public class Player : Singleton<Player>
@@ -11,7 +12,10 @@ public class Player : Singleton<Player>
     [SerializeField] Vector3 _groundedBoxHalfExtents;
     [SerializeField] Transform _groundedTransfrom;
     [SerializeField] LayerMask _walkableLayer;
-    
+
+    [Space]
+    [SerializeField] Transform[] _slopeDetectionTransfroms;
+
     [Space]
     [SerializeField] Transform _cameraTransfrom;
     [SerializeField] Rigidbody _rigidbody;
@@ -20,6 +24,7 @@ public class Player : Singleton<Player>
     bool _isRunInput;
     bool _isJumpInput;
     public bool IsGrounded {get; protected set;}
+    public bool IsOnSlope {get; protected set;}
 
     void OnDrawGizmos()
     {
@@ -37,8 +42,8 @@ public class Player : Singleton<Player>
     {
         UpdateInput();
         UpdateGrounded();
+        UpdateIsOnSlope();
         Move();
-        Jump();
     }
 
     void UpdateInput()
@@ -52,20 +57,47 @@ public class Player : Singleton<Player>
 
     void Move()
     {
+        _rigidbody.useGravity = !(IsOnSlope && IsGrounded);
+        Debug.Log(_rigidbody.useGravity);
         float speed = _isRunInput ? _runSpeed : _speed;
-        Vector3 velocity = new Vector3(_moveInput.x * speed, _rigidbody.velocity.y, _moveInput.y * speed);
-        _rigidbody.velocity = velocity;
-    }
-
-    void Jump()
-    {
+        Vector3 direction = Vector3.ProjectOnPlane(
+                new Vector3(_moveInput.x, 0f, _moveInput.y), _slopeHit.normal).normalized;
+        Vector3 velocity = new Vector3(
+            direction.x * speed, 
+            _rigidbody.useGravity ? _rigidbody.velocity.y : direction.y * speed, 
+            direction.z * speed);
         if (_isJumpInput && IsGrounded)
-            _rigidbody.AddForce(Vector3.up * _jumpForce , ForceMode.Impulse);
+            velocity.y = _jumpForce;
+        _rigidbody.velocity = velocity;
     }
 
     void UpdateGrounded()
     {
         Collider[] cols = Physics.OverlapBox(_groundedTransfrom.position, _groundedBoxHalfExtents, Quaternion.identity, _walkableLayer);
         IsGrounded = cols.Length != 0;
+    }
+
+    float _slopeAngle;
+    RaycastHit _slopeHit;
+    void UpdateIsOnSlope()
+    {
+        if(!IsGrounded)
+            return ;
+
+        foreach(Transform trans in _slopeDetectionTransfroms)
+        {
+            bool rayHit = Physics.Raycast(trans.position, Vector3.down, out _slopeHit, 5f);
+            if(rayHit)
+            {
+                _slopeAngle = Vector3.Angle(Vector3.up, _slopeHit.normal);
+                if(_slopeAngle != 0f)
+                {
+                    IsOnSlope = true;
+                    return;
+                }
+            }
+        }
+        _slopeAngle = 0;
+        IsOnSlope = false;
     }
 }
